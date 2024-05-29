@@ -26,3 +26,5 @@ r3bl_tui = { version = "0.5.1" }
 r3bl_ansi_color = { version = "0.6.9" }
 
 ssh2 = "0.9.4"
+
+get_if_addrs = "0.5"

