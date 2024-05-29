@@ -5,11 +5,8 @@ mod web;
 use std::error::Error;
 
 use std::net::TcpStream;
-use std::process::Command;
 
-use reqwest;
 
-use tokio::io::AsyncBufReadExt;
 
 
 
@@ -51,7 +48,6 @@ pub fn get_ip_up() -> Result<(), Box<dyn Error>> {
 
 }
 
-use std::io::prelude::*;
 
 #[tokio::main]
 async fn main() {

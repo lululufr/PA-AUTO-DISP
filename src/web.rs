@@ -1,6 +1,5 @@
 use std::process::{Command, Output};
-use std::error::{Error as StdError, Error};
-use std::future::Future;
+use std::error::{Error as StdError};
 
 pub async fn get_apache_headers(target: String) -> Result<(), Box<dyn StdError>> {
     let url = format!("http://{}", target);
