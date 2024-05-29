@@ -29,3 +29,5 @@ ssh2 = "0.9.4"
 
 pnet = "0.34.0"
 ipnetwork = "0.20.0"
+futures = { version = "0.3.30", features = ["thread-pool"] }
+threadpool = "1.8.1"

@@ -2,49 +2,24 @@ mod ssh;
 mod utils;
 mod web;
 
+use std::collections::HashMap;
 use std::error::Error;
 
-use std::net::{IpAddr, TcpStream};
+use std::net::{IpAddr, TcpStream, SocketAddr};
+use std::sync::{Arc, Mutex};
+use std::thread;
+use threadpool::ThreadPool;
 use crate::utils::NetworkInterface;
-
-
-fn scan_ports(target_ip: &str) -> Vec<u16> {
-    println!("[x] - Scanning ports ");
-    let mut open_ports = Vec::new();
-
-    for port in 1..=10000 {
-        let address = format!("{}:{}", target_ip, port);
-        match TcpStream::connect(address) {
-            Ok(_) => {
-                println!("Port {} is open", port);
-                open_ports.push(port);
-            }
-            Err(_) => {} // Ignore errors, assuming port is closed
-        }
-    }
-
-    open_ports
-}
-
-
-fn get_net_int() -> Result<NetworkInterface, Box<dyn Error>> {
-
-    match utils::get_current_ip() {
-        Some(networkInt) => {
-            Ok(networkInt)
-        },
-        None => {
-            Err("No interface found".into())
-        },
-    }
-
-}
+use std::time::Duration;
 
 
 
-fn get_ip_up(){
 
-}
+
+
+
+
+
 
 #[tokio::main]
 async fn main() {
@@ -60,33 +35,26 @@ async fn main() {
         .await
         .expect("error : dl rockyou");
 
-    let interface = get_net_int();
-    match interface {
-        Ok(NetworkInterface) => {
-            println!("[x] - IP: {}", NetworkInterface.ip_addr);
-            println!("[x] - mask: {:?}", NetworkInterface.netmask);
 
-          match utils::scan(NetworkInterface.ip_addr, NetworkInterface.netmask).await {
+    match utils::get_parc_ip().await {
+        Ok(ips_ports) => {
+            println!("{:?}",ips_ports);
 
-                Ok(ip_up) => {
-                    println!("{:?}", ip_up);
-                    println!("[x] - Scan terminé");
-                }
-                Err(e) => {
-                    eprintln!("[x] - Erreur lors du scan: {}", e);
-                }
-          }
-            //utils::up_or_not(NetworkInterface.ip_addr);
+
+            for ip in ips_ports.keys() {
+
+                println!("ip: {}", ip);
+                println!("port: {:?}", ips_ports.get(ip).unwrap());
+
+            }
 
 
 
-
-
-
-
-
-
-
+        },
+        Err(e) => {
+            eprintln!("Error: {}", e);
+        }
+    }
 
 
 
@@ -105,15 +73,8 @@ async fn main() {
 
 
 
-
-
         }
-        Err(e) => {
-            eprintln!("Pas d'interface : {}", e);
-        }
-    }
 
 
 
 
-}
