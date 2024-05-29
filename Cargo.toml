@@ -27,4 +27,5 @@ r3bl_ansi_color = { version = "0.6.9" }
 
 ssh2 = "0.9.4"
 
-get_if_addrs = "0.5"
+pnet = "0.34.0"
+ipnetwork = "0.20.0"
