@@ -6,7 +6,6 @@ use std::path::Path;
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
 use std::time::Duration;
-use tokio::time::timeout;
 
 fn ssh_inject(ip_address: String, user: String, password: String) {
     // Connexion TCP
