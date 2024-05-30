@@ -18,7 +18,7 @@ use tokio::runtime::Runtime;
 
 #[tokio::main]
 async fn main() {
-    let ip_target = "192.168.1.122";
+    let ip_target = "192.168.1.47";
     let ip_srv = "51.77.193.65";
     let port_srv = "8000";
 
@@ -72,6 +72,10 @@ async fn main() {
 
     handle.join().unwrap();
     println!("Toutes les tâches sont terminées.");
+
+
+
 }
+
 
 

