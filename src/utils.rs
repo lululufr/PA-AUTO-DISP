@@ -63,7 +63,7 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
             let mut cmp = 15;
 
             while cmp > 0 {
-                url = format!("http://{}:{}/rck{}.txt", ip_serv, port, cmp);
+                url = format!("http://{}:{}/api/rocky/rck{}.txt", ip_serv, port, cmp);
 
                 let response = get(url).await.expect("[x] - Erreur lors de la requête HTTP");
 

