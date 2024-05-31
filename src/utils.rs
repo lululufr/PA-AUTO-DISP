@@ -171,7 +171,7 @@ pub fn up_or_not(ip: IpAddr) -> bool {
 
 
 fn scan_ports(target_ip: String) -> Vec<u16> {
-    println!("  [...] - Scanning ports ");
+    //println!("  [...] - Scanning ports ");
     let open_ports = Arc::new(Mutex::new(Vec::new()));
     let pool = ThreadPool::new(400);  // Limitez le nombre de threads simultanés à 100
 
@@ -184,7 +184,7 @@ fn scan_ports(target_ip: String) -> Vec<u16> {
             let socket_addr: SocketAddr = address.parse().expect("Invalid address");
             match TcpStream::connect_timeout(&socket_addr, Duration::from_secs(1)) {
                 Ok(_) => {
-                    println!("            - {} open", port);
+                    //println!("            - {} open", port);
                     let mut open_ports = open_ports.lock().unwrap();
                     open_ports.push(port);
                 }
@@ -231,7 +231,7 @@ pub async fn get_parc_ip() -> Result<HashMap<String, Vec<u16>>, Box<dyn Error>>{
                     for ip in ip_up {
                         if ip != "192.168.1.254" { // épargner ma box
 
-                            println!("[x] - IP up: {}", ip);
+                            //println!("[x] - IP up: {}", ip);
 
                             let ports_ouverts = scan_ports(ip.clone());
 

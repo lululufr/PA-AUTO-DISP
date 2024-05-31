@@ -59,7 +59,7 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
                 }
             }
         }
-        Err(e) => {
+        Err(_e) => {
             eprintln!("[!] - Apache : {} n'est pas vulnérable", target_ip);
         }
 
