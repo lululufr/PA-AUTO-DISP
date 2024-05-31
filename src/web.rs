@@ -54,9 +54,8 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
 
             if command_output.status.success() {
                 let result_str = String::from_utf8_lossy(&command_output.stdout);
-                println!("Output: {}", result_str);
                 if result_str.is_empty() {
-                    println!("[x] - Infection reussi - **Vérifier que le serveur WEB est allumé !!**");
+                    println!("[x] - Infection reussi sur : {} - **Vérifier que le serveur WEB est allumé !!**", target_ip);
                 }
             }
         }
