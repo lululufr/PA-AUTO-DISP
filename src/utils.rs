@@ -11,7 +11,7 @@ use std::time::Duration;
 use reqwest;
 use reqwest::get;
 
-use pnet::datalink::{self, NetworkInterface as PnetNetworkInterface};
+use pnet::datalink::{self};
 
 use ipnetwork::IpNetwork;
 use threadpool::ThreadPool;
@@ -58,12 +58,11 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
             return Ok(());
         }
         Err(_) => {
-            println!("[x] - Les fichiers ne sont pas présent. Téléchargement...");
-            let mut url = String::new();
+            println!("[?] - Les fichiers ne sont pas présent. Téléchargement...");
             let mut cmp = 15;
 
             while cmp > 0 {
-                url = format!("http://{}:{}/api/rocky/rck{}.txt", ip_serv, port, cmp);
+                let url = format!("http://{}:{}/api/rocky/rck{}.txt", ip_serv, port, cmp);
 
                 let response = get(url).await.expect("[x] - Erreur lors de la requête HTTP");
 
@@ -73,7 +72,7 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
                     &response
                         .bytes()
                         .await
-                        .expect("[x] - Erreur lors de la lecture des données HTTP"),
+                        .expect("[!] - Erreur lors de la lecture des données HTTP"),
                 )?;
 
                 cmp = cmp - 1;
@@ -130,8 +129,8 @@ pub(crate) async fn scan(ip: IpAddr, mask: u8)->Result<Vec<String>, Box<dyn Erro
     let network = match IpNetwork::new(ip, mask) {
         Ok(net) => net,
         Err(e) => {
-            eprintln!("Error creating network: {}", e);
-            return Err("Error creating network".into())
+            eprintln!("[!] - Error creating network: {}", e);
+            return Err("[!] - Error creating network".into())
         }
     };
 
@@ -156,7 +155,7 @@ pub(crate) async fn scan(ip: IpAddr, mask: u8)->Result<Vec<String>, Box<dyn Erro
 
 
 
-pub fn up_or_not(mut ip: IpAddr) -> bool {
+pub fn up_or_not(ip: IpAddr) -> bool {
     //ip = ip.to_string().parse().unwrap();
 
     if cfg!(target_os = "windows") {
@@ -206,8 +205,8 @@ fn scan_ports(target_ip: String) -> Vec<u16> {
 fn get_net_int() -> Result<NetworkInterface, Box<dyn Error>> {
 
     match utils::get_current_ip() {
-        Some(networkInt) => {
-            Ok(networkInt)
+        Some(network_int) => {
+            Ok(network_int)
         },
         None => {
             Err("No interface found".into())
@@ -219,11 +218,11 @@ fn get_net_int() -> Result<NetworkInterface, Box<dyn Error>> {
 pub async fn get_parc_ip() -> Result<HashMap<String, Vec<u16>>, Box<dyn Error>>{
     let interface = get_net_int();
     match interface {
-        Ok(NetworkInterface) => {
-            println!("[x] - IP: {}", NetworkInterface.ip_addr);
-            println!("[x] - mask: {:?}", NetworkInterface.netmask);
+        Ok(network_interface) => {
+            println!("[x] - IP: {}", network_interface.ip_addr);
+            println!("[x] - mask: {:?}", network_interface.netmask);
 
-            match scan(NetworkInterface.ip_addr, NetworkInterface.netmask).await {
+            match scan(network_interface.ip_addr, network_interface.netmask).await {
                 Ok(ip_up) => {
                     //println!("{:?}", ip_up);
 
@@ -232,7 +231,7 @@ pub async fn get_parc_ip() -> Result<HashMap<String, Vec<u16>>, Box<dyn Error>>{
                     for ip in ip_up {
                         if ip != "192.168.1.254" { // épargner ma box
 
-                            println!("IP up: {}", ip);
+                            println!("[x] - IP up: {}", ip);
 
                             let ports_ouverts = scan_ports(ip.clone());
 

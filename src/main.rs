@@ -2,15 +2,8 @@ mod ssh;
 mod utils;
 mod web;
 
-use std::collections::HashMap;
-use std::error::Error;
 
-use std::net::{IpAddr, TcpStream, SocketAddr};
-use std::sync::{Arc, Mutex};
 use std::thread;
-use threadpool::ThreadPool;
-use crate::utils::NetworkInterface;
-use std::time::Duration;
 use futures::future::join_all;
 use tokio::runtime::Runtime;
 
@@ -18,7 +11,7 @@ use tokio::runtime::Runtime;
 
 #[tokio::main]
 async fn main() {
-    let ip_target = "192.168.1.47";
+    //let ip_target = "192.168.1.47"; // en cas de test spécifique
     let ip_srv = "51.77.193.65";
     let port_srv = "8080";
 
@@ -32,10 +25,12 @@ async fn main() {
         rt.block_on(async {
             match utils::get_parc_ip().await {
                 Ok(ips_ports) => {
+
+                    println!("[x] - Début des attaques ...");
+                    println!("______________________");
                     let mut tasks = vec![];
 
                     for ip in ips_ports.keys() {
-                        println!("ip: {}", ip);
 
                         let ports = ips_ports.get(ip).unwrap();
 

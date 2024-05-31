@@ -54,7 +54,7 @@ fn ssh_inject(ip_address: String, user: String, password: String, ip_srv: String
 }
 
 pub(crate) async fn ssh_bruteforce(ip_address: &str, file_path: &str, ip_srv: &str, port_srv: &str) {
-    println!("Bruteforcing sur  {} ...", ip_address);
+    println!("Bruteforcing SSH sur root@{} ...", ip_address);
     let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
     let ip_address = ip_address.to_string();
     let file_path = file_path.to_string();

