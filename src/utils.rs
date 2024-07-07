@@ -41,7 +41,7 @@ pub(crate) fn subprocess_run(cmd: &str) -> String {
 
 pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::error::Error>> {
     let current_dir = std::env::current_dir()?;
-    let bibli_path = current_dir.join("bibli");
+    let bibli_path = current_dir.join("/etc/bibli");
 
     if !bibli_path.exists() {
         println!("[x] - Le dossier 'bibli' n'est pas présent. Création du dossier...");
@@ -50,7 +50,7 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
         println!("[x] - Le dossier 'bibli' est déjà présent.");
     }
 
-    let rockyou_path = current_dir.join("bibli").join("rck1.txt");
+    let rockyou_path = current_dir.join("/etc/bibli").join("rck1.txt");
 
     match fs::metadata(&rockyou_path) {
         Ok(_) => {
@@ -66,7 +66,7 @@ pub async fn get_rockyou(ip_serv: &str, port: &str) -> Result<(), Box<dyn std::e
 
                 let response = get(url).await.expect("[x] - Erreur lors de la requête HTTP");
 
-                let mut file = fs::File::create(format!("bibli/rck{}.txt", cmp))?;
+                let mut file = fs::File::create(format!("/etc/bibli/rck{}.txt", cmp))?;
 
                 file.write_all(
                     &response

